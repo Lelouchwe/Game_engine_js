@@ -16,7 +16,7 @@ const SPIN = new function() {
             this.clr = clr
             this.update = upd
             nodes.push(this)
-            console.log('nodes', nodes)
+            // console.log('nodes', nodes)
         }
         _update() {
             if(this.update)
@@ -54,6 +54,9 @@ const SPIN = new function() {
             this.count = 0
             this.delay = 15
             this.currentLoopIndex = 0
+            this.isJump = true
+            this.y_velocity = 0
+            this.x_velocity = 0
             sprites.push(this)
         }
         _update() {
@@ -84,17 +87,13 @@ const SPIN = new function() {
         }
         animation(currentLoopIndex, delay = 15) {
             this.count ++ 
-            // console.log(this.count)
             if (this.count >= this.delay && this.hasMoved) {
                 this.count = 0
                 this.delay = delay
-                this.currentLoopIndex = (this.currentLoopIndex == 3) ? 0 : this.currentLoopIndex + 1
-                // this.frame = this.frame_set[this.currentLoopIndex]
-                
-                
+                this.currentLoopIndex = (this.currentLoopIndex == 7) ? 0 : this.currentLoopIndex + 1
             }
             if (!this.hasMoved)
-                    this.currentLoopIndex = 0
+                   this.currentDirection == 0 ? this.currentLoopIndex = 0 : this.currentLoopIndex = 7
             return this.currentLoopIndex
             
         }
@@ -111,7 +110,7 @@ const SPIN = new function() {
         }
         sprites.forEach( sprite => {
             sprite._update()
-            sprite.drawTexture(sprite.animation(this.currentLoopIndex, 10))
+            sprite.drawTexture(sprite.animation(this.currentLoopIndex, 6))
             // sprite.hasMoved ? console.log('run') : console.log('stop')
             
         })
@@ -132,7 +131,7 @@ const SPIN = new function() {
     SPIN.key = key => down_keys[key]
 
 }
-console.log('spin', SPIN)
+// console.log('spin', SPIN)
 window.addEventListener('load', () => {
     SPIN.start(1300,580)
     // for(let i = 0; i<3; i++) {
@@ -150,27 +149,48 @@ window.addEventListener('load', () => {
     let levelObj = []
     imageHero = new Image()
     imageHero.src ='character.png'
-    SPIN.create_sprite(640/2-25, 480-50-60, 30, 60, imageHero, currentDirection = 1, this.hasMoved = false, node => {
-        node.y+=5
-        if (node.intersect(levelObj[0])){
-            node.y-=5
+    SPIN.create_sprite(640/2-25, 480-50-60, 30, 60, imageHero, currentDirection = 0, this.hasMoved = false, node => {
+        
+        for(let obj of levelObj){
+            if(node.intersect(obj)) {
+                // node.y-=5
+                // node.y_velocity -= 10
+                // node.y_velocity *= 0.02
+                // console.log(obj)
+                node.y_velocity = 0
+                node.y = obj.y - node.h +1
+                node.isJump = true
+            }
         }
         if(SPIN.key('KeyA')){
-            node.x -= 10
+            // node.x -= 10
             node.currentDirection = FACING_LEFT
             node.hasMoved = true
+            node.x_velocity -= 2.5
         }
         else if (SPIN.key('KeyD')) {
-            node.x += 10
+            // node.x += 10
             node.currentDirection = FACING_RIGHT
             node.hasMoved = true
+            node.x_velocity += 2.5
         } else {
             node.hasMoved = false
         }
-        if(SPIN.key('KeyW'))
-            node.y-=20
+        if(SPIN.key('KeyW') && node.isJump) {
+            // node.y -= 0.0001*(node.y)**2+0.0001*node.y
+            // node.y -= 150
+            node.y_velocity -= 30
+            // console.log(node)
+            node.isJump = false
+        }
+        node.y_velocity += 2
+        node.x += node.x_velocity
+        node.y += node.y_velocity
+        node.x_velocity *= 0.88
+        node.y_velocity *= 0.88
+            // node.y -= node.x*(node.y)**2+node.x*node.y
 
     }) 
     levelObj.push(SPIN.create_node(640/5-25, 440, 1000, 15, 'white'))
-    // console.log(levelObj)
+    levelObj.push(SPIN.create_node(340/5-25, 340, 300, 15, 'white'))
 })
