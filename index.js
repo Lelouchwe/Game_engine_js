@@ -129,7 +129,7 @@ const SPIN = new function() {
             
         }
     }
-    SPIN.create_backgound = (x, y, w, h, image, upd) => new Background(x, y, w, h, image, upd)
+    SPIN.create_background = (x, y, w, h, image, upd) => new Background(x, y, w, h, image, upd)
     SPIN.create_sprite = (x, y, w, h, clr, currentDirection, hasMoved, upd) => new Sprite(x, y, w, h, clr, currentDirection, hasMoved, upd)
     SPIN.create_node = (x, y, w, h, clr, upd) => new Node(x, y, w, h, clr, upd)
 
@@ -195,7 +195,8 @@ window.addEventListener('load', () => {
                 // node.y_velocity *= 0.02
                 // console.log(obj)
                 node.y_velocity = 0
-                node.y = obj.y - node.h +1
+                node.y = obj.y - node.h -1
+                // node.y = (obj.y - obj.h)
                 node.isJump = true
             }
         }
@@ -240,8 +241,8 @@ window.addEventListener('load', () => {
     backgroundFour.src = 'Pale/houses2.png'
     backgroundFive = new Image()
     backgroundFive.src = 'Pale/houses1.png'
-    SPIN.create_backgound(0, 0, 1300,800, backgroundFirst)
-    SPIN.create_backgound(0, 0, 1300,800, backgroundSecond, background => {
+    SPIN.create_background(0, 0, 1300,800, backgroundFirst)
+    SPIN.create_background(0, 0, 1300,800, backgroundSecond, background => {
         if(SPIN.key('KeyA')){
             background.x += 2
             // node.x_velocity -= 1.5
@@ -253,7 +254,7 @@ window.addEventListener('load', () => {
             // node.hasMoved = false
         }
     })
-    SPIN.create_backgound(0, 0, 1300,800, backgroundThird, background => {
+    SPIN.create_background(0, 0, 1300,800, backgroundThird, background => {
         if(SPIN.key('KeyA')){
             background.x += 5
             // node.x_velocity -= 1.5
@@ -265,7 +266,7 @@ window.addEventListener('load', () => {
             // node.hasMoved = false
         }
     })
-    SPIN.create_backgound(0, 0, 1300,800, backgroundFour, background => {
+    SPIN.create_background(0, 0, 1300,800, backgroundFour, background => {
         if(SPIN.key('KeyA')){
             background.x += 7
             // node.x_velocity -= 1.5
@@ -277,7 +278,7 @@ window.addEventListener('load', () => {
             // node.hasMoved = false
         }
     })
-    SPIN.create_backgound(0, 0, 1300,800, backgroundFive, background => {
+    SPIN.create_background(0, 0, 1300,800, backgroundFive, background => {
         if(SPIN.key('KeyA')){
             background.x += 8
             // node.x_velocity -= 1.5
