@@ -1,10 +1,41 @@
 const SPIN = new function() {
-    let SPIN = this, cnv, ctx, width, height, nodes = [], sprites=[], node_count = 0,
+    let SPIN = this, cnv, ctx, width, height, nodes = [], sprites=[], backgrounds=[], node_count = 0,
     for_destroy = {}, down_keys = {}, image, frameIndex = 1, numberOfFrames = 1
     let $ = id => document.getElementById(id)
     let rect = (x, y, w, h, clr) => {
         ctx.fillStyle = clr
         ctx.fillRect(x, y, w, h)
+    }
+    class Background {
+        constructor(x, y, w, h, image, upd) {
+            this.x = x
+            this.y = y
+            this.w = w
+            this.h = h
+            this.image = image
+            this.update = upd
+            backgrounds.push(this)
+        }
+        _update() {
+            if(this.update)
+                this.update(this)
+            if(Math.abs(this.x) > this.w )
+                this.x = 0
+            // console.log(this.x)
+        }
+        drawBackground() {
+            ctx.drawImage( this.image, 0, 0, this.w, this.h, 
+                this.x, 0, this.w, this.h)
+            // if(this.x >= 0)
+            if(this.x <= 0) {
+                ctx.drawImage( this.image, 0, 0, this.w, this.h, 
+                    (this.w + this.x), 0, this.w, this.h)
+            } else {
+                ctx.drawImage( this.image, 0, 0, this.w, this.h, 
+                    -(this.w - this.x), 0, this.w, this.h) 
+            }
+            
+        }
     }
     class Node {
         constructor(x, y, w, h, clr, upd) {
@@ -98,12 +129,18 @@ const SPIN = new function() {
             
         }
     }
-
+    SPIN.create_backgound = (x, y, w, h, image, upd) => new Background(x, y, w, h, image, upd)
     SPIN.create_sprite = (x, y, w, h, clr, currentDirection, hasMoved, upd) => new Sprite(x, y, w, h, clr, currentDirection, hasMoved, upd)
     SPIN.create_node = (x, y, w, h, clr, upd) => new Node(x, y, w, h, clr, upd)
 
     SPIN.loop = () => {
         ctx.clearRect(0, 0, width, height)
+        backgrounds.forEach( background => {
+            background._update()
+            background.drawBackground()
+        })
+        // backgrounds[1]._update()
+        // backgrounds[1].drawBackground()
         for (let node of nodes){
             node._update()
             node.draw()
@@ -133,7 +170,7 @@ const SPIN = new function() {
 }
 // console.log('spin', SPIN)
 window.addEventListener('load', () => {
-    SPIN.start(1300,580)
+    SPIN.start(1300,800)
     // for(let i = 0; i<3; i++) {
     //     for(let j = 0; j<10; j++) {
     //         SPIN.create_node(30 + (20+40) * j, 20 + (20+40)*i, 40, 40, '#ff6d5a', node => node.y +=0.1)
@@ -166,13 +203,13 @@ window.addEventListener('load', () => {
             // node.x -= 10
             node.currentDirection = FACING_LEFT
             node.hasMoved = true
-            node.x_velocity -= 2.5
+            node.x_velocity -= 1.5
         }
         else if (SPIN.key('KeyD')) {
             // node.x += 10
             node.currentDirection = FACING_RIGHT
             node.hasMoved = true
-            node.x_velocity += 2.5
+            node.x_velocity += 1.5
         } else {
             node.hasMoved = false
         }
@@ -191,6 +228,65 @@ window.addEventListener('load', () => {
             // node.y -= node.x*(node.y)**2+node.x*node.y
 
     }) 
-    levelObj.push(SPIN.create_node(640/5-25, 440, 1000, 15, 'white'))
-    levelObj.push(SPIN.create_node(340/5-25, 340, 300, 15, 'white'))
+    levelObj.push(SPIN.create_node(0, 740, 1300, 15, 'white'))
+    levelObj.push(SPIN.create_node(340/5-25, 640, 300, 15, 'white'))
+    backgroundFirst = new Image()
+    backgroundFirst.src = 'Pale/sky.png'
+    backgroundSecond = new Image()
+    backgroundSecond.src = 'Pale/houses4.png'
+    backgroundThird = new Image()
+    backgroundThird.src = 'Pale/houses3.png'
+    backgroundFour = new Image()
+    backgroundFour.src = 'Pale/houses2.png'
+    backgroundFive = new Image()
+    backgroundFive.src = 'Pale/houses1.png'
+    SPIN.create_backgound(0, 0, 1300,800, backgroundFirst)
+    SPIN.create_backgound(0, 0, 1300,800, backgroundSecond, background => {
+        if(SPIN.key('KeyA')){
+            background.x += 2
+            // node.x_velocity -= 1.5
+        }
+        else if (SPIN.key('KeyD')) {
+            background.x -= 2
+            // node.x_velocity += 1.5
+        } else {
+            // node.hasMoved = false
+        }
+    })
+    SPIN.create_backgound(0, 0, 1300,800, backgroundThird, background => {
+        if(SPIN.key('KeyA')){
+            background.x += 5
+            // node.x_velocity -= 1.5
+        }
+        else if (SPIN.key('KeyD')) {
+            background.x -= 5
+            // node.x_velocity += 1.5
+        } else {
+            // node.hasMoved = false
+        }
+    })
+    SPIN.create_backgound(0, 0, 1300,800, backgroundFour, background => {
+        if(SPIN.key('KeyA')){
+            background.x += 7
+            // node.x_velocity -= 1.5
+        }
+        else if (SPIN.key('KeyD')) {
+            background.x -= 7
+            // node.x_velocity += 1.5
+        } else {
+            // node.hasMoved = false
+        }
+    })
+    SPIN.create_backgound(0, 0, 1300,800, backgroundFive, background => {
+        if(SPIN.key('KeyA')){
+            background.x += 8
+            // node.x_velocity -= 1.5
+        }
+        else if (SPIN.key('KeyD')) {
+            background.x -= 8
+            // node.x_velocity += 1.5
+        } else {
+            // node.hasMoved = false
+        }
+    })
 })
